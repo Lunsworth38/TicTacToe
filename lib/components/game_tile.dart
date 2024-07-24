@@ -1,28 +1,36 @@
 import 'package:flutter/material.dart';
 
 class GameTile extends StatelessWidget {
-  final double? value;
+  final int? value;
+  final Function() onTap;
 
-  GameTile({required this.value, super.key});
+  const GameTile({required this.value, required this.onTap, super.key});
 
   showSymbol() {
     if (value == null) {
-      return const Text("");
-    }
-    if (value == 0) {
-      return const Text("O");
+      return const Text(
+        "",
+      );
     }
     if (value == 1) {
-      return const Text("1");
+      return const Text("O",
+          style: TextStyle(
+              fontFamily: 'calibri', fontSize: 100, color: Color(0xFF66D7D1)));
+    }
+    if (value == 2) {
+      return const Text("X",
+          style: TextStyle(
+              fontFamily: 'calibri', fontSize: 100, color: Color(0xFFFC7753)));
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    return Expanded(
+    return GestureDetector(
+        onTap: onTap,
         child: Card(
-      color: Colors.blue,
-      child: showSymbol(),
-    ));
+          color: const Color(0xFF2c2a3c),
+          child: Center(child: showSymbol()),
+        ));
   }
 }
