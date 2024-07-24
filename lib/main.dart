@@ -42,6 +42,7 @@ class _MyHomePageState extends State<MyHomePage> {
     null
   ];
   int currentPlayerTurn = 1;
+  List<int> winningRow = [];
 
   final row1 = [0, 1, 2];
   final row2 = [3, 4, 5];
@@ -51,6 +52,32 @@ class _MyHomePageState extends State<MyHomePage> {
   final col3 = [2, 5, 8];
   final diag1 = [0, 4, 8];
   final diag2 = [2, 4, 6];
+
+  late final List<List<int>> rowsAndColumnsAndDiagonals = [
+    row1,
+    row2,
+    row3,
+    col1,
+    col2,
+    col3,
+    diag1,
+    diag2
+  ];
+
+  checkScore() {
+    List<int> completeRow = rowsAndColumnsAndDiagonals.firstWhere(
+        (r) =>
+            r.every((e) => tilesState[e] != null) &&
+            r.every((e) {
+              print("first ${r.first}");
+              return tilesState[e] == tilesState[r.first];
+            }),
+        orElse: () => []);
+
+    setState(() {
+      winningRow = completeRow;
+    });
+  }
 
   onTileTap(index, player) {
     int nextPlayer() {
@@ -81,38 +108,63 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
+    checkScore();
     print(currentPlayerTurn);
     print(tilesState);
+    print(winningRow);
     List<Widget> tiles = [
       GameTile(
-          value: tilesState[0], onTap: () => onTileTap(0, currentPlayerTurn)),
+          value: tilesState[0],
+          disabled: winningRow.isNotEmpty,
+          onTap: () => onTileTap(0, currentPlayerTurn)),
       GameTile(
-          value: tilesState[1], onTap: () => onTileTap(1, currentPlayerTurn)),
+          value: tilesState[1],
+          disabled: winningRow.isNotEmpty,
+          onTap: () => onTileTap(1, currentPlayerTurn)),
       GameTile(
-          value: tilesState[2], onTap: () => onTileTap(2, currentPlayerTurn)),
+          value: tilesState[2],
+          disabled: winningRow.isNotEmpty,
+          onTap: () => onTileTap(2, currentPlayerTurn)),
       GameTile(
-          value: tilesState[3], onTap: () => onTileTap(3, currentPlayerTurn)),
+          value: tilesState[3],
+          disabled: winningRow.isNotEmpty,
+          onTap: () => onTileTap(3, currentPlayerTurn)),
       GameTile(
-          value: tilesState[4], onTap: () => onTileTap(4, currentPlayerTurn)),
+          value: tilesState[4],
+          disabled: winningRow.isNotEmpty,
+          onTap: () => onTileTap(4, currentPlayerTurn)),
       GameTile(
-          value: tilesState[5], onTap: () => onTileTap(5, currentPlayerTurn)),
+          value: tilesState[5],
+          disabled: winningRow.isNotEmpty,
+          onTap: () => onTileTap(5, currentPlayerTurn)),
       GameTile(
-          value: tilesState[6], onTap: () => onTileTap(6, currentPlayerTurn)),
+          value: tilesState[6],
+          disabled: winningRow.isNotEmpty,
+          onTap: () => onTileTap(6, currentPlayerTurn)),
       GameTile(
-          value: tilesState[7], onTap: () => onTileTap(7, currentPlayerTurn)),
+          value: tilesState[7],
+          disabled: winningRow.isNotEmpty,
+          onTap: () => onTileTap(7, currentPlayerTurn)),
       GameTile(
-          value: tilesState[8], onTap: () => onTileTap(8, currentPlayerTurn)),
+          value: tilesState[8],
+          disabled: winningRow.isNotEmpty,
+          onTap: () => onTileTap(8, currentPlayerTurn)),
     ];
+
     return Scaffold(
         backgroundColor: const Color(0xFF232130),
         body: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 12),
             child: Column(children: [
               const SizedBox(height: 68),
-              Text(
-                "It is Player $currentPlayerTurn's turn!",
-                style: TextStyle(fontSize: 60, color: playerColor()),
-              ),
+              if (winningRow.isNotEmpty)
+                const Text("Game Over",
+                    style: TextStyle(fontSize: 80, color: Color(0xFFF2EFEA))),
+              if (winningRow.isEmpty)
+                Text(
+                  "It is Player $currentPlayerTurn's turn!",
+                  style: TextStyle(fontSize: 60, color: playerColor()),
+                ),
               Center(
                 child: GridView.count(
                   shrinkWrap: true,
