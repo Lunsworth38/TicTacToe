@@ -3,8 +3,14 @@ import 'package:flutter/material.dart';
 class GameTile extends StatelessWidget {
   final int? value;
   final Function() onTap;
+  final bool disabled;
 
-  const GameTile({required this.value, required this.onTap, super.key});
+  const GameTile({
+    required this.value,
+    required this.onTap,
+    required this.disabled,
+    super.key,
+  });
 
   showSymbol() {
     if (value == null) {
@@ -27,7 +33,7 @@ class GameTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-        onTap: onTap,
+        onTap: disabled ? null : onTap,
         child: Card(
           color: const Color(0xFF2c2a3c),
           child: Center(child: showSymbol()),
