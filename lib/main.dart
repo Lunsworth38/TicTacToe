@@ -112,44 +112,6 @@ class _MyHomePageState extends State<MyHomePage> {
     print(currentPlayerTurn);
     print(tilesState);
     print(winningRow);
-    List<Widget> tiles = [
-      GameTile(
-          value: tilesState[0],
-          disabled: winningRow.isNotEmpty,
-          onTap: () => onTileTap(0, currentPlayerTurn)),
-      GameTile(
-          value: tilesState[1],
-          disabled: winningRow.isNotEmpty,
-          onTap: () => onTileTap(1, currentPlayerTurn)),
-      GameTile(
-          value: tilesState[2],
-          disabled: winningRow.isNotEmpty,
-          onTap: () => onTileTap(2, currentPlayerTurn)),
-      GameTile(
-          value: tilesState[3],
-          disabled: winningRow.isNotEmpty,
-          onTap: () => onTileTap(3, currentPlayerTurn)),
-      GameTile(
-          value: tilesState[4],
-          disabled: winningRow.isNotEmpty,
-          onTap: () => onTileTap(4, currentPlayerTurn)),
-      GameTile(
-          value: tilesState[5],
-          disabled: winningRow.isNotEmpty,
-          onTap: () => onTileTap(5, currentPlayerTurn)),
-      GameTile(
-          value: tilesState[6],
-          disabled: winningRow.isNotEmpty,
-          onTap: () => onTileTap(6, currentPlayerTurn)),
-      GameTile(
-          value: tilesState[7],
-          disabled: winningRow.isNotEmpty,
-          onTap: () => onTileTap(7, currentPlayerTurn)),
-      GameTile(
-          value: tilesState[8],
-          disabled: winningRow.isNotEmpty,
-          onTap: () => onTileTap(8, currentPlayerTurn)),
-    ];
 
     return Scaffold(
         backgroundColor: const Color(0xFF232130),
@@ -166,10 +128,16 @@ class _MyHomePageState extends State<MyHomePage> {
                   style: TextStyle(fontSize: 60, color: playerColor()),
                 ),
               Center(
-                child: GridView.count(
+                child: GridView.builder(
+                  itemCount: tilesState.length,
+                  itemBuilder: (context, index) => GameTile(
+                      value: tilesState[index],
+                      onTap: () => onTileTap(index, currentPlayerTurn),
+                      disabled: winningRow.isNotEmpty),
                   shrinkWrap: true,
-                  crossAxisCount: 3,
-                  children: tiles,
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 3,
+                  ),
                 ),
               )
             ])));
