@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:tic_tac_toe/components/game_tile.dart';
 
@@ -41,7 +43,7 @@ class _MyHomePageState extends State<MyHomePage> {
     null,
     null
   ];
-  int currentPlayerTurn = 1;
+  int? currentPlayerTurn;
   List<int> winningRow = [];
 
   final row1 = [0, 1, 2];
@@ -79,31 +81,48 @@ class _MyHomePageState extends State<MyHomePage> {
     });
   }
 
-  onTileTap(index, player) {
-    int nextPlayer() {
-      if (player == 1) {
-        return 2;
-      }
-      if (player == 2) {
-        return 1;
-      }
-      throw Error();
+  int nextPlayer(int? player) {
+    if (player == 1) {
+      return 2;
     }
+    if (player == 2) {
+      return 1;
+    }
+    return randomiseStartPlayer();
+  }
 
+  onTileTap(int index, int? player) {
     setState(() {
       tilesState[index] = player;
-      currentPlayerTurn = nextPlayer();
+      currentPlayerTurn = nextPlayer(player);
     });
   }
 
-  playerColor() {
-    if (currentPlayerTurn == 1) {
+  Color? playerColor(int? playerNumber) {
+    if (playerNumber == 1) {
       return const Color(0xFF66D7D1);
     }
-    if (currentPlayerTurn == 2) {
+    if (playerNumber == 2) {
       return const Color(0xFFFC7753);
     }
-    throw Error();
+    return null;
+  }
+
+  int randomiseStartPlayer() {
+    return Random().nextInt(2) + 1;
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    currentPlayerTurn = randomiseStartPlayer();
+  }
+
+  void resetGame() {
+    setState(() {
+      tilesState = [null, null, null, null, null, null, null, null, null];
+      currentPlayerTurn = randomiseStartPlayer();
+    });
   }
 
   @override
@@ -120,12 +139,20 @@ class _MyHomePageState extends State<MyHomePage> {
             child: Column(children: [
               const SizedBox(height: 68),
               if (winningRow.isNotEmpty)
-                const Text("Game Over",
-                    style: TextStyle(fontSize: 80, color: Color(0xFFF2EFEA))),
-              if (winningRow.isEmpty)
+                Text("Player ${tilesState[winningRow.first]} wins",
+                    style: TextStyle(
+                        fontSize: 80,
+                        color: playerColor(tilesState[winningRow.first]))),
+              if (!tilesState.contains(null) && winningRow.isEmpty) ...[
+                const Text(
+                  "Its a draw",
+                  style: TextStyle(fontSize: 60, color: Color(0xFFf2efea)),
+                ),
+              ] else if (winningRow.isEmpty)
                 Text(
                   "It is Player $currentPlayerTurn's turn!",
-                  style: TextStyle(fontSize: 60, color: playerColor()),
+                  style: TextStyle(
+                      fontSize: 60, color: playerColor(currentPlayerTurn)),
                 ),
               Center(
                 child: GridView.builder(
@@ -139,7 +166,10 @@ class _MyHomePageState extends State<MyHomePage> {
                     crossAxisCount: 3,
                   ),
                 ),
-              )
+              ),
+              const SizedBox(height: 68),
+              OutlinedButton(
+                  onPressed: () => resetGame(), child: const Text("New Game")),
             ])));
   }
 }
