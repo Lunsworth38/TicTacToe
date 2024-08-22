@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:tic_tac_toe/components/app_theme.dart';
 
 class GameTile extends StatelessWidget {
   final int? value;
@@ -12,31 +13,33 @@ class GameTile extends StatelessWidget {
     super.key,
   });
 
-  showSymbol() {
+  showSymbol(Color? playerOneColor, Color? playerTwoColor) {
     if (value == null) {
       return const Text(
         "",
       );
     }
     if (value == 1) {
-      return const Text("O",
+      return Text("O",
           style: TextStyle(
-              fontFamily: 'calibri', fontSize: 100, color: Color(0xFF66D7D1)));
+              fontFamily: 'calibri', fontSize: 100, color: playerOneColor));
     }
     if (value == 2) {
-      return const Text("X",
+      return Text("X",
           style: TextStyle(
-              fontFamily: 'calibri', fontSize: 100, color: Color(0xFFFC7753)));
+              fontFamily: 'calibri', fontSize: 100, color: playerTwoColor));
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    final MyColors? theme = Theme.of(context).extension<MyColors>();
     return GestureDetector(
         onTap: disabled ? null : onTap,
         child: Card(
-          color: const Color(0xFF2c2a3c),
-          child: Center(child: showSymbol()),
+          color: theme?.tileColor,
+          child: Center(
+              child: showSymbol(theme?.playerOneColor, theme?.playerTwoColor)),
         ));
   }
 }
