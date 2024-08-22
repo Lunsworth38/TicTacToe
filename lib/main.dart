@@ -1,31 +1,44 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:tic_tac_toe/components/app_theme.dart';
 import 'package:tic_tac_toe/components/game_tile.dart';
+import 'package:tic_tac_toe/theme/theme.dart';
 
 void main() {
   runApp(const MyApp());
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
   const MyApp({super.key});
+
+  @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  bool isLightTheme = true;
+
+  void toggleTheme() {
+    setState(() => isLightTheme = !isLightTheme);
+  }
 
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
-        useMaterial3: true,
-      ),
-      home: const MyHomePage(),
+      title: 'TIC TAC TOE',
+      theme: isLightTheme ? lightTheme : darkTheme,
+      home: MyHomePage(toggleTheme: toggleTheme, isLightTheme: isLightTheme),
     );
   }
 }
 
 class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key});
+  final Function toggleTheme;
+  final bool isLightTheme;
+  const MyHomePage(
+      {super.key, required this.toggleTheme, required this.isLightTheme});
 
   @override
   State<MyHomePage> createState() => _MyHomePageState();
@@ -71,7 +84,6 @@ class _MyHomePageState extends State<MyHomePage> {
         (r) =>
             r.every((e) => tilesState[e] != null) &&
             r.every((e) {
-              print("first ${r.first}");
               return tilesState[e] == tilesState[r.first];
             }),
         orElse: () => []);
@@ -98,16 +110,6 @@ class _MyHomePageState extends State<MyHomePage> {
     });
   }
 
-  Color? playerColor(int? playerNumber) {
-    if (playerNumber == 1) {
-      return const Color(0xFF66D7D1);
-    }
-    if (playerNumber == 2) {
-      return const Color(0xFFFC7753);
-    }
-    return null;
-  }
-
   int randomiseStartPlayer() {
     return Random().nextInt(2) + 1;
   }
@@ -127,32 +129,45 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
+    final MyColors? theme = Theme.of(context).extension<MyColors>();
+    Color? playerColor(int? playerNumber) {
+      if (playerNumber == 1) {
+        return theme?.playerOneColor;
+      }
+      if (playerNumber == 2) {
+        return theme?.playerTwoColor;
+      }
+      return null;
+    }
+
     checkScore();
-    print(currentPlayerTurn);
-    print(tilesState);
-    print(winningRow);
 
     return Scaffold(
-        backgroundColor: const Color(0xFF232130),
+        backgroundColor: theme?.bgColor,
         body: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 12),
+            padding: const EdgeInsets.fromLTRB(12, 60, 12, 0),
             child: Column(children: [
+              OutlinedButton(
+                  onPressed: () => widget.toggleTheme(),
+                  child: Text(
+                      "switch to ${widget.isLightTheme ? "dark theme" : "lightTheme"}")),
               const SizedBox(height: 68),
               if (winningRow.isNotEmpty)
-                Text("Player ${tilesState[winningRow.first]} wins",
+                Text("Player ${tilesState[winningRow.first]} wins!",
                     style: TextStyle(
-                        fontSize: 80,
+                        fontSize: 46,
                         color: playerColor(tilesState[winningRow.first]))),
               if (!tilesState.contains(null) && winningRow.isEmpty) ...[
-                const Text(
+                Text(
                   "Its a draw",
-                  style: TextStyle(fontSize: 60, color: Color(0xFFf2efea)),
+                  style:
+                      TextStyle(fontSize: 60, color: theme?.defaultTextColor),
                 ),
               ] else if (winningRow.isEmpty)
                 Text(
                   "It is Player $currentPlayerTurn's turn!",
                   style: TextStyle(
-                      fontSize: 60, color: playerColor(currentPlayerTurn)),
+                      fontSize: 46, color: playerColor(currentPlayerTurn)),
                 ),
               Center(
                 child: GridView.builder(
